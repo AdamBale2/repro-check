@@ -1,0 +1,62 @@
+name: repro-check
+description: >-
+  Run the reproduction example from a bug report in an isolated container,
+  on the latest release and on the default branch, and comment the result on the issue.
+author: repro-check contributors
+branding:
+  icon: check-circle
+  color: orange
+
+inputs:
+  package:
+    description: >-
+      pip requirement for the latest release, e.g. "requests".
+      Leave empty to test only the default branch.
+    required: false
+    default: ""
+  main-path:
+    description: >-
+      Path to the checked-out source to test as the default branch.
+      Leave empty to test only the latest release.
+    required: false
+    default: "."
+  python-version:
+    description: Python version used to run the example.
+    required: false
+    default: "3.12"
+  timeout:
+    description: Seconds allowed for the example on each version.
+    required: false
+    default: "60"
+  comment:
+    description: Post the result as a comment on the issue ("true" or "false").
+    required: false
+    default: "true"
+  github-token:
+    description: Token used to post the comment. Needs `issues: write`.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  verdict:
+    description: >-
+      One of reproduced, fixed-on-main, regression, not-reproduced,
+      no-example, invalid-example, inconclusive.
+    value: ${{ steps.run.outputs.verdict }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      shell: bash
+      # Inputs go through environment variables, never into the script itself,
+      # so nothing from the issue can be interpreted by the shell.
+      env:
+        INPUT_PACKAGE: ${{ inputs.package }}
+        INPUT_MAIN_PATH: ${{ inputs.main-path }}
+        INPUT_PYTHON_VERSION: ${{ inputs.python-version }}
+        INPUT_TIMEOUT: ${{ inputs.timeout }}
+        INPUT_COMMENT: ${{ inputs.comment }}
+        REPRO_CHECK_TOKEN: ${{ inputs.github-token }}
+        PYTHONPATH: ${{ github.action_path }}/src
+      run: python3 -m repro_check

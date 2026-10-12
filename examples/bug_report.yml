@@ -1,0 +1,36 @@
+# Copy this file to .github/ISSUE_TEMPLATE/bug_report.yml in your project.
+# The "Reproduction" field is where repro-check looks for the example.
+
+name: Bug report
+description: Something does not work as expected.
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happens, and what did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: >-
+        A minimal, self-contained Python example. It should raise an exception or
+        fail an `assert` while the bug is present, run in under a minute, and not
+        need network access, files or credentials.
+      render: python
+      placeholder: |
+        import yourpackage
+
+        assert yourpackage.add(2, 2) == 4
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `pip show yourpackage`, first two lines.

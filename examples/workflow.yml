@@ -1,0 +1,38 @@
+# Copy this file to .github/workflows/repro-check.yml in your project.
+#
+# A maintainer adds the "needs-repro" label to a bug report; repro-check runs the
+# example from the issue and comments the result. Only people with triage access
+# can add labels, so strangers cannot spend your Actions minutes.
+
+name: repro-check
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  repro:
+    if: github.event.label.name == 'needs-repro'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Keep the token out of .git/config.
+          persist-credentials: false
+
+      - id: check
+        uses: AdamBale2/repro-check@v0
+        with:
+          package: your-package-name  # as published on PyPI
+
+      # Optional: label the issue with the verdict.
+      - if: steps.check.outputs.verdict == 'fixed-on-main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: gh issue edit "$ISSUE" --repo "$GITHUB_REPOSITORY" --add-label "fixed-on-main"

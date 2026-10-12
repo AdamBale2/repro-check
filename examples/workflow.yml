@@ -26,7 +26,7 @@ jobs:
           persist-credentials: false
 
       - id: check
-        uses: AdamBale2/repro-check@v0
+        uses: AdamBale2/repro-check@v0.1.0
         with:
           package: your-package-name  # as published on PyPI
 

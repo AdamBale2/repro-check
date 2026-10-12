@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: AdamBale2/repro-check@v0
+      - uses: AdamBale2/repro-check@v0.1.0
         with:
           package: yourpackage
 ```
